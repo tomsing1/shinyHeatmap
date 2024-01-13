@@ -1,15 +1,23 @@
 Package: shinyHeatmap
 Title: A shiny app to create & modify a ComplexHeatmap
 Version: 0.0.0.9000
-Authors@R: person('Thomas', 'Sandmann', email = 'tomsing1@gmail.com', role = c('cre', 'aut'))
-Description: This shiny web application demonstrates how to create & modify a a ComplexHeatmap, allowing users to specify e.g. the grouping and order of columns by interacting with a data table.
+Authors@R: 
+    person("Thomas", "Sandmann", , "tomsing1@gmail.com", role = c("cre", "aut"))
+Description: This shiny web application demonstrates how to create &
+    modify a a ComplexHeatmap, allowing users to specify e.g. the grouping
+    and order of columns by interacting with a data table.
 License: Apache License (>= 2)
+URL: https://github.com/tomsing1/shinyHeatmap
+BugReports: https://github.com/tomsing1/shinyHeatmap/issues
 Imports: 
     config (>= 0.3.2),
     golem (>= 0.4.1),
     shiny (>= 1.7.4)
+Suggests: 
+    spelling,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 Encoding: UTF-8
+Language: en-US
 LazyData: true
-RoxygenNote: 7.1.1
-URL: https://github.com/tomsing1/shinyHeatmap
-BugReports: https://github.com/tomsing1/shinyHeatmap/issues
+RoxygenNote: 7.3.0
