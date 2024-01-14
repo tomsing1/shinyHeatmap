@@ -10,12 +10,13 @@ app_ui <- function(request) {
   page_sidebar(
     title = "shinyHeatmap",
     sidebar = sidebar(
-      title = "Heatmap controls",
-      varSelectInput(
-        "var", "Select variable",
-        dplyr::select_if(mtcars, is.numeric)
+      title = "Dataset selection",
+      selectInput(
+        inputId = "dataset",
+        label = "Select dataset",
+        choices = "Xia et al",
+        selected = 1
       ),
-      numericInput("bins", "Number of bins", 30)
     ),
     layout_column_wrap(
       width = 1/2,
@@ -37,6 +38,18 @@ app_ui <- function(request) {
           "Features",
           card(
             DT::DTOutput("feature_table")
+          )
+        ),
+        nav_panel(
+          "Options",
+          card(
+            selectInput(inputId = "column_split",
+                        label = "Split columns by",
+                        choices = c("")),
+            selectInput(inputId = "row_split",
+                        label = "Split rows by",
+                        choices = c("")),
+
           )
         )
       )

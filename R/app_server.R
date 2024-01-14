@@ -6,9 +6,17 @@
 #' @import DT
 #' @noRd
 app_server <- function(input, output, session) {
+
   abundance <- golem::get_golem_options("abundance")
   feature_anno <- golem::get_golem_options("feature_anno")
   sample_anno <- golem::get_golem_options("sample_anno")
+
+  updateSelectInput(session, "column_split",
+                    choices = c("", colnames(sample_anno)),
+                    selected = 1)
+  updateSelectInput(session, "row_split",
+                    choices = c("", colnames(feature_anno)),
+                    selected = 1)
 
   output$sample_table <- DT::renderDT({
     sample_anno |>
@@ -74,13 +82,14 @@ app_server <- function(input, output, session) {
 
   output$heatmap <- renderPlot({
     req(abundance)
-
     checkmate::assert_matrix(abundance)
     ComplexHeatmap::Heatmap(
       matrix = abundance[rows(), cols(), drop = FALSE],
       top_annotation = column_ha(),
       right_annotation = row_ha(),
-      cluster_columns = FALSE
+      cluster_columns = FALSE,
+      column_split = sample_anno[[input$column_split]],
+      row_split = feature_anno[[input$row_split]]
     )
   })
 }
