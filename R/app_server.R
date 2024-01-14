@@ -11,15 +11,28 @@ app_server <- function(input, output, session) {
   feature_anno <- reactiveVal(golem::get_golem_options("feature_anno"))
   sample_anno <- reactiveVal(golem::get_golem_options("sample_anno"))
 
+  selected <- reactiveValues(
+    rows = seq.int(nrow(golem::get_golem_options("abundance"))),
+    cols = seq.int(ncol(golem::get_golem_options("abundance")))
+  )
+  observeEvent(input$feature_table_rows_all, {
+    selected$rows <- input$feature_table_rows_all
+  })
+  observeEvent(input$sample_table_rows_all, {
+    selected$cols <- input$sample_table_rows_all
+  })
+
   observeEvent(sample_anno,{
+    freezeReactiveValue(input, "column_split")
     updateSelectInput(session, "column_split",
                       choices = c("None", colnames(sample_anno())))
   })
-  observeEvent(feature_anno,
+  observeEvent(feature_anno,{
+               freezeReactiveValue(input, "row_split")
                updateSelectInput(
                  session, "row_split",
                  choices = c("None", colnames(feature_anno())))
-  )
+  })
 
   output$sample_table <- DT::renderDT({
     checkmate::assert_data_frame(sample_anno())
@@ -49,30 +62,13 @@ app_server <- function(input, output, session) {
       )
   })
 
-  rows <- reactive({
-    if(is.null(input$feature_table_rows_all)) {
-      rows <- seq.int(nrow(abundance()))
-    } else {
-      rows <- input$feature_table_rows_all
-    }
-    return(rows)
-  })
-
-  cols <- reactive({
-    if(is.null(input$sample_table_rows_all)) {
-      cols <- seq.int(ncol(abundance()))
-    } else {
-      cols <- input$sample_table_rows_all
-    }
-    return(cols)
-  })
-
   output$heatmap <- renderPlot({
-    req(abundance)
+    req(abundance, selected)
     checkmate::assert_matrix(abundance())
-
     # remove rows with only missing values
-    m <- abundance()[rows(), cols(), drop = FALSE]
+    m <- abundance()[selected$rows,
+                     selected$cols,
+                     drop = FALSE]
     m <- m[!apply(m, 1, \(x) all(is.na(x))), , drop = FALSE]
 
     # annotations
@@ -93,12 +89,15 @@ app_server <- function(input, output, session) {
     } else {
       row_split <- NULL
     }
+    # cluster rows
+    row_cl <- hclust(dist(impute::impute.knn(m)$data))
     # heatmap
     ComplexHeatmap::Heatmap(
       matrix = m,
       top_annotation = column_ha,
       right_annotation = row_ha,
       cluster_columns = FALSE,
+      cluster_rows = row_cl,
       column_split = column_split,
       row_split = row_split
     )
