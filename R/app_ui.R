@@ -1,16 +1,45 @@
 #' The application User-Interface
 #'
 #' @param request Internal parameter for `{shiny}`.
-#'     DO NOT REMOVE.
 #' @import shiny
+#' @import bslib
+#' @importFrom dplyr select_if
 #' @noRd
 app_ui <- function(request) {
-  tagList(
-    # Leave this function for adding external resources
-    golem_add_external_resources(),
-    # Your application UI logic
-    fluidPage(
-      h1("shinyHeatmap")
+
+  page_sidebar(
+    title = "shinyHeatmap",
+    sidebar = sidebar(
+      title = "Heatmap controls",
+      varSelectInput(
+        "var", "Select variable",
+        dplyr::select_if(mtcars, is.numeric)
+      ),
+      numericInput("bins", "Number of bins", 30)
+    ),
+    layout_column_wrap(
+      width = 1/2,
+      height = 300,
+      card(
+        card_header("Heatmap"),
+        plotOutput("heatmap"),
+        style = "resize:both;",
+        full_screen = TRUE
+      ),
+      navset_card_tab(
+        nav_panel(
+          "Samples",
+          card(
+            DT::DTOutput("sample_table")
+          )
+        ),
+        nav_panel(
+          "Features",
+          card(
+            DT::DTOutput("feature_table")
+          )
+        )
+      )
     )
   )
 }

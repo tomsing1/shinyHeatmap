@@ -6,10 +6,17 @@ options(shiny.port = httpuv::randomPort())
 
 # Detach all loaded packages and clean your environment
 golem::detach_all_attached()
-# rm(list=ls(all.names = TRUE))
+rm(list=ls(all.names = TRUE))
 
 # Document and reload your package
 golem::document_and_reload()
 
+dl <- xia()
+
 # Run the application
-run_app()
+run_app(
+  abundance = dl$abundance,
+  stats = dl$stats,
+  sample_anno = dl$sample_anno[colnames(dl$abundance), , drop = FALSE],
+  feature_anno = dl$feature_anno[row.names(dl$abundance), , drop = FALSE]
+)
