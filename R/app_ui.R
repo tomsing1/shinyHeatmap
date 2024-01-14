@@ -20,7 +20,7 @@ app_ui <- function(request) {
     ),
     layout_column_wrap(
       width = 1/2,
-      height = 300,
+      height = 400,
       card(
         card_header("Heatmap"),
         plotOutput("heatmap"),
@@ -45,10 +45,10 @@ app_ui <- function(request) {
           card(
             selectInput(inputId = "column_split",
                         label = "Split columns by",
-                        choices = c("")),
+                        choices = c(None = "")),
             selectInput(inputId = "row_split",
                         label = "Split rows by",
-                        choices = c("")),
+                        choices = c(None = "")),
 
           )
         )
